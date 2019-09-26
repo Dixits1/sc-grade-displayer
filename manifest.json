@@ -1,0 +1,15 @@
+{
+  "manifest_version": 2,
+  "name": "Schoology Grade Displayer",
+  "description": " ",
+  "version": "0.0.1",
+  "content_scripts": 
+  [{
+    "matches": [
+      "https://schoology.harker.org/grades/grades"
+    ],
+    "js": ["content.js"]
+  }],
+  "permissions": ["activeTab"],
+  "converted_from_user_script": true
+}
