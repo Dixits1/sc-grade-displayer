@@ -110,10 +110,26 @@ for(var i = 0; i < courses.length; i++)
 			if(course_row_text.charAt(0) == "<")
 			{
 				//table row is a grade
-				grade_given = course_inners[j].childNodes[1].firstChild.firstChild.firstChild.innerHTML;
-				grade_max = course_inners[j].childNodes[1].firstChild.childNodes[1].innerHTML;
+				grade_s = course_inners[j].childNodes[1].firstChild.childNodes;
+				// grade_given = course_inners[j].childNodes[1].firstChild.firstChild.firstChild.innerHTML;
+				// grade_max = course_inners[j].childNodes[1].firstChild.childNodes[1].innerHTML;
+				grade_given = -1;
+				grade_max = -1;
 
-				if(grade_given != "—" && (typeof grade_given !== 'undefined'))
+				for(var k in grade_s)
+				{
+					if(grade_s[k].className == "awarded-grade")
+					{
+						grade_given = grade_s[k].firstChild.innerHTML;
+					}
+					else if(grade_s[k].className == "max-grade")
+					{
+						grade_max = grade_s[k].innerHTML;
+					}
+					
+				}
+				//grade_given != "—" && (typeof grade_given !== 'undefined') && 
+				if(grade_given != -1)
 				{
 					grade_max = grade_max.split("/")[1].substring(1);
 					//console.log("\t\t" + "------------------");
