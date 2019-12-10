@@ -1,15 +1,24 @@
 {
-  "manifest_version": 2,
-  "name": "Schoology Grade Displayer",
-  "description": " ",
-  "version": "0.0.1",
-  "content_scripts": 
-  [{
-    "matches": [
-      "https://schoology.harker.org/grades/grades"
-    ],
-    "js": ["content.js"]
-  }],
-  "permissions": ["activeTab"],
-  "converted_from_user_script": true
+
+    "manifest_version": 2,
+    "name": "Schoology Grade Displayer",
+    "description": " ",
+    "version": "0.1.1",
+    "background": {
+      "scripts": ["background.js"]
+    },
+    "content_scripts": [{
+        "css": ["main.css"],
+        "matches": [
+            "https://schoology.harker.org/grades/grades",
+            "https://app.schoology.com/grades/grades",
+            "https://athena.harker.org/grades/grades"
+        ],
+        "js": ["content.js"]
+    }],
+    "browser_action": {
+      "default_title": "Some tooltip"
+    },
+    "permissions": ["activeTab", "contextMenus"],
+    "converted_from_user_script": true
 }
