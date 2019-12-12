@@ -18,8 +18,7 @@ var total_grade_count = 0;
 
 var click_count = 0;
 
-var current_opened_btn = null;
-var current_popup_course = null;
+var popup_selected_course = null;
 
 
 class Course
@@ -155,7 +154,9 @@ popup_cont.classList.add("popup-cont");
 
 var svg_text = '<svg viewPort="0 0 12 12" version="1.1" xmlns="http://www.w3.org/2000/svg"><line x1="1" y1="11" x2="11" y2="1" stroke="black" stroke-width="2"/><line x1="1" y1="1" x2="11" y2="11" stroke="black" stroke-width="2"/></svg>'
 
-var inner_text = '<div id="popup"> <div id="close-btn">' + svg_text + '</div><div id="popup-header-cont"><span id="popup-main-header">Finals Grade Calculator</span><span id="popup-secondary-header">Test Class Value</span></div><div id="popup-final-grade-cont"><span id="popup-needed-grade">--.-%</span></div><div id="popup-body-cont"><input id="popup-desired-input" class="popup-input" type="number" min="0" max="100" placeholder="Desired Overall Grade for Course(e.g. 93.5)"/><input id="popup-weight-input" class="popup-input" type="number" min="0" max="100" placeholder="Final Weight(e.g. 20.0)"/></div><div id="popup-footer-cont"><button id="popup-calc-btn">Calculate Grade Needed on Final</button></div></div><div id="popup-mask"></div>';
+// var inner_text = '<div id="popup"> <div id="close-btn">' + svg_text + '</div><div id="popup-header-cont"><span id="popup-main-header">Finals Grade Calculator</span><span id="popup-secondary-header">Test Class Value</span></div><div id="popup-final-grade-cont"><span id="popup-needed-grade">--.-%</span></div><div id="popup-body-cont"><input id="popup-desired-input" class="popup-input" type="number" min="0" max="100" placeholder="Desired Overall Grade for Course(e.g. 93.5)"/><input id="popup-weight-input" class="popup-input" type="number" min="0" max="100" placeholder="Final Weight(e.g. 20.0)"/></div><div id="popup-footer-cont"><button id="popup-calc-btn">Calculate Grade Needed on Final</button></div></div><div id="popup-mask"></div>';
+
+var inner_text = '<div id="popup"> <div id="close-btn">' + svg_text + '</div><div id="popup-header-cont"><span id="popup-main-header">Finals Grade Calculator</span><select id="popup-dropdown-header"></select></div><div id="popup-final-grade-cont"><span id="popup-needed-grade">--.-%</span></div><div id="popup-body-cont"><span id="popup-error">Error</span><input id="popup-desired-input" class="popup-input" type="number" min="0" max="100" placeholder="Desired Overall Grade for Course(e.g. 93.5)"/><input id="popup-weight-input" class="popup-input" type="number" min="0" max="100" placeholder="Final Weight(e.g. 20.0)"/></div><div id="popup-footer-cont"><button id="popup-calc-btn">Calculate Grade Needed on Final</button></div></div><div id="popup-mask"></div>';
 
 var font_text = '<link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,500&display=swap" rel="stylesheet">';
 
@@ -165,59 +166,104 @@ document.getElementsByTagName('head')[0].innerHTML = font_text + head_innerHTML;
 
 popup_cont.innerHTML = inner_text;
 
-
 body_overall.insertBefore(popup_cont, body_overall.childNodes[0]);
 
+document.getElementById('popup-dropdown-header').addEventListener('change', function() {
+	var curr_val = this.options[this.selectedIndex].value;
+	var width_val = curr_val.length*10 + 5;
+	this.setAttribute("style", "width: " + width_val + "px;");
+
+	var course_arr_val = this.options[this.selectedIndex].getAttribute("coursearr");
+	popup_selected_course = course_array[course_arr_val];
+});
+
+var body_main_elem = document.getElementById("main-inner");
+
+//fgc = finals grade calculator
+var fgc_btn_wrapper = document.createElement("div");
+
+var fgc_button = document.createElement("a");
+
+var node = document.createTextNode("Finals Grade Calculator");
+
+fgc_button.setAttribute("class", "link-btn");
+
+fgc_btn_wrapper.setAttribute("class", "download-grade-wrapper");
+fgc_btn_wrapper.setAttribute("style", "right: 201.84px");
+// fgc_button.setAttribute("onClick", "show_most_harmfuls()");
+fgc_button.appendChild(node);
+fgc_btn_wrapper.appendChild(fgc_button);
+body_main_elem.insertBefore(fgc_btn_wrapper, body_main_elem.childNodes[0]);
+
+
+fgc_button.addEventListener('click', function() {
+	document.getElementById("popup-desired-input").value = "";
+	document.getElementById("popup-weight-input").value = "";
+	document.getElementById("popup-needed-grade").innerHTML = "--.-%";
+	document.getElementById("popup-error").innerHTML = "";
+	popup_cont.classList.add("display-popup-cont");
+	setTimeout(()=>{}, 10);
+	popup_cont.classList.add("opacity-fade-in");
+}, false);
+
+
 document.getElementById("close-btn").addEventListener("click", function() {
-	
-	if(current_opened_btn != null)
-	{
-		if(current_opened_btn.getAttribute("is_open") == "true")
-		{
-			current_opened_btn.setAttribute("is_open", "false");
-			popup_cont.classList.remove("display-popup-cont");
-			setTimeout(()=>{}, 10);
-			popup_cont.classList.remove("opacity-fade-in");
-			current_opened_btn = null;
-		}
-	}
+	popup_cont.classList.remove("display-popup-cont");
+	setTimeout(()=>{}, 10);
+	popup_cont.classList.remove("opacity-fade-in");
 });
 
 document.getElementById("popup-calc-btn").addEventListener("click", function() {
-	if(current_popup_course != null)
+	if(popup_selected_course != null)
 	{
 		var d = document.getElementById("popup-desired-input").value;
 		var w = document.getElementById("popup-weight-input").value;
-		var c = current_popup_course.calculate_grade();
+		var c = popup_selected_course.calculate_grade();
+		var error_elem = document.getElementById("popup-error");
 
-		if(!isNaN(d) && !isNaN(w))
+		if(d == "" || w == "")
 		{
-			if(d <= 100 && w <= 100)
+			error_elem.innerHTML = 'Please fill in all of the fields.';
+		}
+		else
+		{
+			if(!isNaN(d) && !isNaN(w))
 			{
-				d = parseFloat(d);
-				w = parseFloat(w);
-				console.log(d);
-				console.log(w);
-				console.log(c);
-				var final_grade = (d - c*(100.0 - w))/w;
-				var percent_str = roundTo((final_grade*100), 2) + "%";
-				if(final_grade > 1.10)
+				if(!(d == 0 || w == 0))
 				{
-					document.getElementById("popup-needed-grade").innerHTML = "...Let's just say you need some major extra credit.";
+					if(d <= 100 && w <= 100)
+					{
+						error_elem.innerHTML = '';
+						d = parseFloat(d);
+						w = parseFloat(w);
+						console.log(d);
+						console.log(w);
+						console.log(c);
+						var final_grade = (d - c*(100.0 - w))/w;
+						var percent_str = roundTo((final_grade*100), 2) + "%";
+						if(final_grade > 1.10)
+						{
+							document.getElementById("popup-needed-grade").innerHTML = "...Let's just say you need some major extra credit.";
+						}
+						else
+						{
+							document.getElementById("popup-needed-grade").innerHTML = percent_str;
+						}
+					}
+					else
+					{
+						error_elem.innerHTML = 'Please enter a value less than 100%.';
+					}
 				}
 				else
 				{
-					document.getElementById("popup-needed-grade").innerHTML = percent_str;
+					error_elem.innerHTML = 'Please enter in a value greater than 0%.';
 				}
 			}
 			else
 			{
-				//error
+				error_elem.innerHTML = 'Please enter in a vaid number.';
 			}
-		}
-		else
-		{
-			//error
 		}
 	}
 });
@@ -485,12 +531,14 @@ for(var i = 0; i < courses.length; i++)
 
 		console.log(c);
 
-		display_rogerhub(c);
+		// display_rogerhub(c);
 	}
 
 }
 
 console.log(course_array);
+
+init_popup();
 
 show_most_harmfuls();
 
@@ -518,6 +566,14 @@ function get_course_from_elem(e)
 	return null;
 }
 
+function init_popup() {
+	populate_dropdown();
+	var popup_dd = document.getElementById('popup-dropdown-header');
+	var curr_val = popup_dd.options[popup_dd.selectedIndex].value;
+	var width_val = curr_val.length*10 + 5;
+	popup_dd.setAttribute("style", "width: " + width_val + "px;");
+}
+
 function display_rogerhub(c)
 {
 	var course_elem = c.course_elem;
@@ -539,59 +595,31 @@ function display_rogerhub(c)
 
 		course_elem.appendChild(rh_button);
 
+		var parent_elem = course_elem.parentNode.parentNode;
+
 		// btn_to_course_dict.push
 
 		rh_button.addEventListener('click', function(event) {
-			current_opened_btn = this;
-
-			var is_open = this.getAttribute("is_open");
-
-			var parent_elem = this.parentNode.parentNode;
-
-			var course = get_course_from_elem(parent_elem);
-
-			current_popup_course = course;
-
-			console.log(course)
-
-			if(is_open == null)
-			{
-				this.setAttribute("is_open", "true");
-			}
-			else
-			{
-				if(is_open == "false")
-				{
-					this.setAttribute("is_open", "true");
-				}
-				else if(is_open == "true")
-				{
-					this.setAttribute("is_open", "false");
-				}
-			}
-			// console.log(this.getAttribute("is_open"));
-
-			is_open = this.getAttribute("is_open");
-			console.log(is_open);
 
 			var gradebook_cont = parent_elem.getElementsByClassName("gradebook-course-grades")[0];
 
+			//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			//!!!!!!!!!!!!important line!!!!!!!!!!!!!
+			//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			event.stopPropagation();
+			//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			//!!!!!!!!!!!!important line!!!!!!!!!!!!!
+			//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 			gradebook_cont.setAttribute("style", "display: none;");
 
-			if(is_open == "true") {
-				document.getElementById("popup-secondary-header").innerHTML = course.course_title.split(":")[0];
-				document.getElementById("popup-desired-input").value = "";
-				document.getElementById("popup-weight-input").value = "";
-				document.getElementById("popup-needed-grade").innerHTML = "--.-%";
-				popup_cont.classList.add("display-popup-cont");
-				setTimeout(()=>{}, 10);
-				popup_cont.classList.add("opacity-fade-in");
-			}
-			else {
-				popup_cont.classList.remove("display-popup-cont");
-			}
+			document.getElementById("popup-desired-input").value = "";
+			document.getElementById("popup-weight-input").value = "";
+			document.getElementById("popup-needed-grade").innerHTML = "--.-%";
+			document.getElementById("popup-error").innerHTML = "";
+			popup_cont.classList.add("display-popup-cont");
+			setTimeout(()=>{}, 10);
+			popup_cont.classList.add("opacity-fade-in");
 		}, true);
 	}
 }
@@ -650,6 +678,20 @@ function reset_calcs()
 	for(var i = 0; i < added_elems.length; i++)
 	{
 		added_elems[i--].remove();
+	}
+}
+
+function populate_dropdown() {
+	var dd_elem = document.getElementById("popup-dropdown-header");
+	for(var i = 0; i < course_array.length; i++)
+	{
+		var new_option = document.createElement('option');
+		var title = course_array[i].course_title.split(":")[0];
+		new_option.setAttribute("value", title);
+		new_option.innerHTML = title;
+		new_option.setAttribute('coursearr', i);
+		if(!title.includes("Advisory"))
+			dd_elem.appendChild(new_option);
 	}
 }
 

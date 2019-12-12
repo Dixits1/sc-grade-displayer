@@ -12,7 +12,10 @@
         "matches": [
             "https://schoology.harker.org/grades/grades",
             "https://app.schoology.com/grades/grades",
-            "https://athena.harker.org/grades/grades"
+            "https://athena.harker.org/grades/grades",
+            "https://schoology.harker.org/grades/grades/",
+            "https://athena.harker.org/grades/grades/",
+            "https://app.schoology.com/grades/grades/"
         ],
         "js": ["content.js"]
     }],
