@@ -2,7 +2,7 @@ var courses = document.getElementsByClassName("gradebook-course");
 
 var PRINT_VALS = false;
 
-var SHOW_OVERALL_GRADE = false;
+var SHOW_OVERALL_GRADE = true;
 
 var course_weighted_sum = 0;
 var course_credits_sum = 0;
@@ -572,6 +572,9 @@ function init_popup() {
 	var curr_val = popup_dd.options[popup_dd.selectedIndex].value;
 	var width_val = curr_val.length*10 + 5;
 	popup_dd.setAttribute("style", "width: " + width_val + "px;");
+
+	var course_arr_val = popup_dd.options[popup_dd.selectedIndex].getAttribute("coursearr");
+	popup_selected_course = course_array[course_arr_val];
 }
 
 function display_rogerhub(c)
