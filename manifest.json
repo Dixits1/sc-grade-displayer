@@ -20,8 +20,8 @@
         "js": ["content.js"]
     }],
     "browser_action": {
-      "default_title": "Some tooltip"
+      "default_title": "Enabled"
     },
-    "permissions": ["activeTab", "contextMenus"],
+    "permissions": ["activeTab", "contextMenus", "storage"],
     "converted_from_user_script": true
 }
